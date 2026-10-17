@@ -19,11 +19,15 @@
 
 package com.puppycrawl.tools.checkstyle.utils;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.isUtilsClassHasPrivateConstructor;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -55,6 +59,32 @@ public class FilterUtilTest {
         assertWithMessage("Suppression file does not exist")
                 .that(FilterUtil.isFileExists("non-existent.xml"))
                 .isFalse();
+    }
+
+    @Test
+    public void testSuppressionPatternExpansion() {
+        final Pattern commentFormat = Pattern.compile("SUPPRESS (.*)");
+        final Pattern first = FilterUtil.createSuppressionPattern(
+                "$1", "SUPPRESS MemberName", commentFormat);
+        final Pattern second = FilterUtil.createSuppressionPattern(
+                "$1", "SUPPRESS MemberName", commentFormat);
+        assertThat(first.pattern()).isEqualTo("MemberName");
+        assertThat(first).isNotSameInstanceAs(second);
+    }
+
+    @Test
+    public void testInvalidExpandedSuppressionPattern() {
+        final Pattern commentFormat = Pattern.compile("SUPPRESS (.*)");
+        final IllegalArgumentException exception = getExpectedThrowable(
+                IllegalArgumentException.class, () -> {
+                    FilterUtil.createSuppressionPattern(
+                            "$1[", "SUPPRESS MemberName", commentFormat);
+                });
+        assertThat(exception).hasMessageThat()
+                .isEqualTo("unable to parse expanded comment MemberName[");
+        assertThat(exception).hasCauseThat().isInstanceOf(PatternSyntaxException.class);
+        assertThat(((PatternSyntaxException) exception.getCause()).getPattern())
+                .isEqualTo("MemberName[");
     }
 
 }

@@ -87,7 +87,10 @@
     <file name="CommonUtilTest">
       <!-- CommonUtil.getConstructor returns a Constructor, so the test needs this import too. -->
       <allow class="java.lang.reflect.Constructor" />
-      <!-- Pre-existing mockito consumer, see #21684. -->
+    </file>
+
+    <file name="ResourceUtilTest">
+      <!-- Resource tests moved from CommonUtilTest, a pre-existing consumer; see #21684. -->
       <allow pkg="org.mockito" />
     </file>
 

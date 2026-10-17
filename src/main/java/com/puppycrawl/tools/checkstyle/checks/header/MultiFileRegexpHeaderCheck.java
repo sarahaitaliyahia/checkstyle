@@ -41,6 +41,7 @@ import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.ExternalResourceHolder;
 import com.puppycrawl.tools.checkstyle.api.FileText;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 /**
  * <div>
@@ -287,7 +288,7 @@ public class MultiFileRegexpHeaderCheck
                 throw new IllegalArgumentException("Header file is not set");
             }
             try {
-                final URI uri = CommonUtil.getUriByFilename(headerPath);
+                final URI uri = ResourceUtil.getUriByFilename(headerPath);
                 final List<String> readerLines = getLines(headerPath, uri);
                 final List<Pattern> patterns = readerLines.stream()
                         .map(HeaderFileMetadata::createPatternFromLine)

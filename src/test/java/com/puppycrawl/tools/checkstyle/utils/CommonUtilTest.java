@@ -23,32 +23,17 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.isUtilsClassHasPrivateConstructor;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import com.puppycrawl.tools.checkstyle.AbstractPathTestSupport;
-import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
-import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
-import com.puppycrawl.tools.checkstyle.api.Configuration;
 
 public class CommonUtilTest extends AbstractPathTestSupport {
 
@@ -519,119 +504,12 @@ public class CommonUtilTest extends AbstractPathTestSupport {
     }
 
     @Test
-    public void testGetUriByFilenameFindsAbsoluteResourceOnClasspath() throws Exception {
-        final String filename =
-            "/" + getPackageLocation() + "/InputCommonUtilTest_empty_checks.xml";
-        final URI uri = CommonUtil.getUriByFilename(filename);
-
-        final Properties properties = System.getProperties();
-        final Configuration config = ConfigurationLoader.loadConfiguration(uri.toASCIIString(),
-            new PropertiesExpander(properties));
-        assertWithMessage("Unexpected config name!")
-            .that(config.getName())
-            .isEqualTo("Checker");
-    }
-
-    @Test
-    public void testGetUriByFilenameFindsRelativeResourceOnClasspath() throws Exception {
-        final String filename =
-            getPackageLocation() + "/InputCommonUtilTest_empty_checks.xml";
-        final URI uri = CommonUtil.getUriByFilename(filename);
-
-        final Properties properties = System.getProperties();
-        final Configuration config = ConfigurationLoader.loadConfiguration(uri.toASCIIString(),
-            new PropertiesExpander(properties));
-        assertWithMessage("Unexpected config name!")
-            .that(config.getName())
-            .isEqualTo("Checker");
-    }
-
-    /**
-     * This test illustrates #6232.
-     * Without fix, the assertion will fail because the URL under test
-     * "com/puppycrawl/tools/checkstyle/utils/commonutil/InputCommonUtilTest_resource.txt"
-     * will be interpreted relative to the current package
-     * "com/puppycrawl/tools/checkstyle/utils/"
-     */
-    @Test
-    public void testGetUriByFilenameFindsResourceRelativeToRootClasspath() throws Exception {
-        final String filename =
-                getPackageLocation() + "/InputCommonUtilTest_resource.txt";
-        final URI uri = CommonUtil.getUriByFilename(filename);
-        assertWithMessage("URI is null for: %s", filename)
-            .that(uri)
-            .isNotNull();
-        final String uriRelativeToPackage =
-                "com/puppycrawl/tools/checkstyle/utils/"
-                        + getPackageLocation() + "/InputCommonUtilTest_resource.txt";
-        assertWithMessage("URI is relative to package %s", uriRelativeToPackage)
-            .that(uri.toASCIIString())
-            .doesNotContain(uriRelativeToPackage);
-        final String content = IOUtils.toString(uri.toURL(), StandardCharsets.UTF_8);
-        assertWithMessage("Content mismatches for: %s", uri.toASCIIString())
-            .that(content)
-            .startsWith("good");
-    }
-
-    @Test
-    public void testGetUriByFilenameClasspathPrefixLoadConfig() throws Exception {
-        final String filename = CommonUtil.CLASSPATH_URL_PROTOCOL
-            + getPackageLocation() + "/InputCommonUtilTestWithChecks.xml";
-        final URI uri = CommonUtil.getUriByFilename(filename);
-
-        final Properties properties = System.getProperties();
-        final Configuration config = ConfigurationLoader.loadConfiguration(uri.toASCIIString(),
-            new PropertiesExpander(properties));
-        assertWithMessage("Unexpected config name!")
-            .that(config.getName())
-            .isEqualTo("Checker");
-    }
-
-    @Test
-    public void testGetUriByFilenameFindsRelativeResourceOnClasspathPrefix() throws Exception {
-        final String filename = CommonUtil.CLASSPATH_URL_PROTOCOL
-            + getPackageLocation() + "/InputCommonUtilTest_empty_checks.xml";
-        final URI uri = CommonUtil.getUriByFilename(filename);
-
-        final Properties properties = System.getProperties();
-        final Configuration config = ConfigurationLoader.loadConfiguration(uri.toASCIIString(),
-            new PropertiesExpander(properties));
-        assertWithMessage("Unexpected config name!")
-            .that(config.getName())
-            .isEqualTo("Checker");
-    }
-
-    @Test
     public void testIsCodePointWhitespace() {
         final int[] codePoints = " 123".codePoints().toArray();
         assertThat(CommonUtil.isCodePointWhitespace(codePoints, 0))
                 .isTrue();
         assertThat(CommonUtil.isCodePointWhitespace(codePoints, 1))
                 .isFalse();
-    }
-
-    @Test
-    public void testLoadSuppressionsUriSyntaxException() throws Exception {
-        final URL configUrl = mock();
-        when(configUrl.toURI()).thenThrow(URISyntaxException.class);
-        try (MockedStatic<CommonUtil> utilities =
-                     mockStatic(CommonUtil.class, CALLS_REAL_METHODS)) {
-            final String fileName = "/suppressions_none.xml";
-            utilities.when(() -> CommonUtil.getCheckstyleResource(fileName))
-                    .thenReturn(configUrl);
-
-            final CheckstyleException ex = getExpectedThrowable(CheckstyleException.class, () -> {
-                CommonUtil.getUriByFilename(fileName);
-            });
-            assertWithMessage("Invalid exception cause")
-                    .that(ex)
-                    .hasCauseThat()
-                            .isInstanceOf(URISyntaxException.class);
-            assertWithMessage("Invalid exception message")
-                    .that(ex)
-                    .hasMessageThat()
-                            .isEqualTo("Unable to find: " + fileName);
-        }
     }
 
     private static final class TestCloseable implements Closeable {

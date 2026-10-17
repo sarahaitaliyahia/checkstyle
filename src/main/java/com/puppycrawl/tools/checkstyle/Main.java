@@ -49,6 +49,7 @@ import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.api.RootModule;
 import com.puppycrawl.tools.checkstyle.utils.ChainedPropertyUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 import com.puppycrawl.tools.checkstyle.utils.XpathUtil;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -887,7 +888,7 @@ public final class Main {
             else if (hasConfigurationFile) {
                 try {
                     // test location only
-                    CommonUtil.getUriByFilename(configurationFile);
+                    ResourceUtil.getUriByFilename(configurationFile);
                 }
                 catch (CheckstyleException ignored) {
                     final String msg = "Could not find config XML file '%s'.";

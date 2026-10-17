@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import com.puppycrawl.tools.checkstyle.AbstractAutomaticBean;
 import com.puppycrawl.tools.checkstyle.PropertyType;
@@ -35,7 +34,7 @@ import com.puppycrawl.tools.checkstyle.TreeWalkerFilter;
 import com.puppycrawl.tools.checkstyle.XdocsPropertyType;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.FilterUtil;
 import com.puppycrawl.tools.checkstyle.utils.WeakReferenceHolder;
 
 /**
@@ -392,35 +391,21 @@ public class SuppressionCommentFilter
                 commentFormat = filter.offCommentFormat;
             }
 
-            // Expand regexp for check and message
-            // Does not intern Patterns with Utils.getPattern()
-            String format = "";
-            try {
-                format = CommonUtil.fillTemplateWithStringsByRegexp(
-                        filter.checkFormat, text, commentFormat);
-                tagCheckRegexp = Pattern.compile(format);
-
-                if (filter.messageFormat == null) {
-                    tagMessageRegexp = null;
-                }
-                else {
-                    format = CommonUtil.fillTemplateWithStringsByRegexp(
-                            filter.messageFormat, text, commentFormat);
-                    tagMessageRegexp = Pattern.compile(format);
-                }
-
-                if (filter.idFormat == null) {
-                    tagIdRegexp = null;
-                }
-                else {
-                    format = CommonUtil.fillTemplateWithStringsByRegexp(
-                            filter.idFormat, text, commentFormat);
-                    tagIdRegexp = Pattern.compile(format);
-                }
+            tagCheckRegexp = FilterUtil.createSuppressionPattern(
+                    filter.checkFormat, text, commentFormat);
+            if (filter.messageFormat == null) {
+                tagMessageRegexp = null;
             }
-            catch (final PatternSyntaxException exc) {
-                throw new IllegalArgumentException(
-                    "unable to parse expanded comment " + format, exc);
+            else {
+                tagMessageRegexp = FilterUtil.createSuppressionPattern(
+                        filter.messageFormat, text, commentFormat);
+            }
+            if (filter.idFormat == null) {
+                tagIdRegexp = null;
+            }
+            else {
+                tagIdRegexp = FilterUtil.createSuppressionPattern(
+                        filter.idFormat, text, commentFormat);
             }
         }
 

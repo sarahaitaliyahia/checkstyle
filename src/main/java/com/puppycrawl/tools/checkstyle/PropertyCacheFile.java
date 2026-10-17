@@ -39,8 +39,8 @@ import java.util.Set;
 
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 import com.puppycrawl.tools.checkstyle.utils.OsSpecificUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 /**
  * This class maintains a persistent(on file-system) store of the files
@@ -296,7 +296,7 @@ public final class PropertyCacheFile {
      */
     private static byte[] loadExternalResource(String location)
             throws IOException, CheckstyleException {
-        final URI uri = CommonUtil.getUriByFilename(location);
+        final URI uri = ResourceUtil.getUriByFilename(location);
 
         try (InputStream is = uri.toURL().openStream()) {
             return toByteArray(is);

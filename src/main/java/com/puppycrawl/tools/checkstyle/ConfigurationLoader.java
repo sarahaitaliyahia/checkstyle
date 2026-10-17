@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 /**
  * Loads a configuration from a standard configuration XML file.
@@ -272,7 +272,7 @@ public final class ConfigurationLoader {
                                                   IgnoredModulesOptions ignoredModulesOptions,
                                                   ThreadModeSettings threadModeSettings)
             throws CheckstyleException {
-        return loadConfiguration(CommonUtil.sourceFromFilename(config), overridePropsResolver,
+        return loadConfiguration(ResourceUtil.sourceFromFilename(config), overridePropsResolver,
                 ignoredModulesOptions, threadModeSettings);
     }
 

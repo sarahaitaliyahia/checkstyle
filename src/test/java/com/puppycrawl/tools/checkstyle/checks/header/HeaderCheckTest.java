@@ -42,6 +42,7 @@ import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.internal.utils.TestUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 public class HeaderCheckTest extends AbstractModuleTestSupport {
 
@@ -292,7 +293,7 @@ public class HeaderCheckTest extends AbstractModuleTestSupport {
     @Test
     public void testExternalResource() throws Exception {
         final HeaderCheck check = new HeaderCheck();
-        final URI uri = CommonUtil.getUriByFilename(getPath("InputHeaderjava.header"));
+        final URI uri = ResourceUtil.getUriByFilename(getPath("InputHeaderjava.header"));
         check.setHeaderFile(uri);
         final Set<String> results = check.getExternalResourceLocations();
         assertWithMessage("Invalid result size")

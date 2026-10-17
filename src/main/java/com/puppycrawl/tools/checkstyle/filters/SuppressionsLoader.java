@@ -38,7 +38,7 @@ import com.puppycrawl.tools.checkstyle.TreeWalkerFilter;
 import com.puppycrawl.tools.checkstyle.XmlLoader;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.FilterSet;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 /**
  * Loads a filter chain of suppressions.
@@ -232,7 +232,7 @@ public final class SuppressionsLoader
      */
     public static FilterSet loadSuppressions(String filename)
             throws CheckstyleException {
-        return loadSuppressions(CommonUtil.sourceFromFilename(filename), filename);
+        return loadSuppressions(ResourceUtil.sourceFromFilename(filename), filename);
     }
 
     /**
@@ -258,7 +258,7 @@ public final class SuppressionsLoader
      */
     public static Set<TreeWalkerFilter> loadXpathSuppressions(String filename)
             throws CheckstyleException {
-        return loadXpathSuppressions(CommonUtil.sourceFromFilename(filename), filename);
+        return loadXpathSuppressions(ResourceUtil.sourceFromFilename(filename), filename);
     }
 
     /**

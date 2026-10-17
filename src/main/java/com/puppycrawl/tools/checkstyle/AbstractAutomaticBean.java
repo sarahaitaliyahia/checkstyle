@@ -54,6 +54,7 @@ import com.puppycrawl.tools.checkstyle.api.Scope;
 import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
 import com.puppycrawl.tools.checkstyle.checks.naming.AccessModifierOption;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 /**
  * A Java Bean that implements the component lifecycle interfaces by
@@ -427,7 +428,7 @@ public abstract class AbstractAutomaticBean
 
             if (!CommonUtil.isBlank(url)) {
                 try {
-                    result = CommonUtil.getUriByFilename(url);
+                    result = ResourceUtil.getUriByFilename(url);
                 }
                 catch (CheckstyleException exc) {
                     throw new IllegalArgumentException(exc);

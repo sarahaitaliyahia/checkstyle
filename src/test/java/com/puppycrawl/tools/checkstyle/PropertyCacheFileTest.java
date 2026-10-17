@@ -59,7 +59,7 @@ import com.google.common.io.ByteStreams;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.internal.utils.TestUtil;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.ResourceUtil;
 
 public class PropertyCacheFileTest extends AbstractPathTestSupport {
 
@@ -247,7 +247,7 @@ public class PropertyCacheFileTest extends AbstractPathTestSupport {
         cache.putExternalResources(resources);
 
         final MessageDigest digest = MessageDigest.getInstance("SHA-1");
-        final URI uri = CommonUtil.getUriByFilename(pathToResource);
+        final URI uri = ResourceUtil.getUriByFilename(pathToResource);
         final byte[] input =
                 ByteStreams.toByteArray(new BufferedInputStream(uri.toURL().openStream()));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -535,14 +535,14 @@ public class PropertyCacheFileTest extends AbstractPathTestSupport {
         final String uniqueFileName = "junit_" + UUID.randomUUID() + ".java";
         final File cacheFile = new File(temporaryFolder, uniqueFileName);
         final List<String> messages = Splitter.on(';').splitToList(rawMessages);
-        // We mock getUriByFilename method of CommonUtil to guarantee that it will
+        // We mock getUriByFilename method of ResourceUtil to guarantee that it will
         // throw CheckstyleException with the specific content.
-        try (MockedStatic<CommonUtil> commonUtil = mockStatic(CommonUtil.class)) {
+        try (MockedStatic<ResourceUtil> resourceUtil = mockStatic(ResourceUtil.class)) {
             final int numberOfRuns = messages.size();
             final String[] configHashes = new String[numberOfRuns];
             final String[] externalResourceHashes = new String[numberOfRuns];
             for (int index = 0; index < numberOfRuns; index++) {
-                commonUtil.when(() -> CommonUtil.getUriByFilename(any(String.class)))
+                resourceUtil.when(() -> ResourceUtil.getUriByFilename(any(String.class)))
                         .thenThrow(new CheckstyleException(messages.get(index)));
                 final Configuration config = new DefaultConfiguration("myConfig");
                 final PropertyCacheFile cache = new PropertyCacheFile(config, cacheFile.getPath());
